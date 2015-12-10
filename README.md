@@ -1,7 +1,7 @@
 #Guesstimator
 <img src="http://i.imgur.com/JMD7wo4.jpg" />
 
-Guesstimator is a program that searches the Google Places, Yelp, and Foursquare APIs to create a list of all the bars in the given location. Then, it combines their ratings as a Bayesian estimate to rank them more accurately. 
+Guesstimator is a program that searches the Google Places, Yelp, and Foursquare APIs to create a list of bars in the given location. Then, it combines their ratings as a Bayesian estimate to rank them more accurately. 
 
 ##Usage
     Search Radius (meters): 40000
