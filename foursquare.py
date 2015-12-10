@@ -18,7 +18,7 @@ def search(lat, lng, distance):
     :returns: List of retrieved venues
     """
 
-    url = 'https://api.foursquare.com/v2/venues/explore?ll=%s,%s&intent=browse&radius=%s&limit=50&categoryId=%s&client_id=%s&client_secret=%s&v=%s' % (lat, lng, distance, CATEGORY_ID, CLIENT_ID, CLIENT_SECRET, time.strftime("%Y%m%d"))
+    url = 'https://api.foursquare.com/v2/venues/explore?ll={},{}&intent=browse&radius={}&limit=50&categoryId={}&client_id={}&client_secret={}&v={}'.format(lat, lng, distance, CATEGORY_ID, CLIENT_ID, CLIENT_SECRET, time.strftime("%Y%m%d"))
     venue_list = []
 
     try:

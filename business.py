@@ -1,5 +1,7 @@
-import urllib2
 import json
+
+from contextlib import closing
+from urllib2 import urlopen
 
 
 class Business:
@@ -20,10 +22,6 @@ def make_request(url):
     :param url: The URL to request
     :returns: JSON response
     """
-    
-    req = urllib2.Request(url)
-    response = urllib2.urlopen(req)
-    data = json.loads(response.read())
-    response.close()
 
-    return data
+    with closing(urlopen(url)) as response:
+        return json.loads(response.read())

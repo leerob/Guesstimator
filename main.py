@@ -65,7 +65,7 @@ def main():
     for lat,lng in locations:
 
         # Retrieve all businesses for all sources
-        print 'Searching lat: %.2f long: %.2f ...' % (lat, lng)
+        print 'Searching lat: {} long: {} ...'.format(lat, lng)
         venues.extend(foursquare.search(lat, lng, distance))
         businesses.extend(yelp.search(lat, lng, distance))
         places.extend(google.search(lat, lng, distance))
@@ -101,7 +101,7 @@ def main():
     full_list.extend(venues)
     full_list.extend(businesses)
     full_list.extend(places)
-    print 'Found %d total businesses!' % len(full_list)
+    print 'Found {} total businesses!'.format(len(full_list))
     
     # Combine ratings of duplicates
     seen_addresses = set()
@@ -131,7 +131,7 @@ def main():
         writer.writeheader()
         for venue in filtered_list:
             writer.writerow({'Name': venue.name.encode('utf-8'),
-                             'Rating': "%.2f" % venue.bayesian,
+                             'Rating': '{0:.2f}'.format(venue.bayesian),
                              'Number of Ratings': venue.rating_count,
                              'Checkins': venue.checkin_count,
                              'Sources': venue.source_count})

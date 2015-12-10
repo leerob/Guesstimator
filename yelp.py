@@ -20,7 +20,7 @@ def search(lat, lng, distance):
 
     params = {}
     params['term'] = 'nightlife,night_club,restaurant'
-    params['ll'] = '%f,%f' % (lat, lng) 
+    params['ll'] = '{},{}'.format(lat, lng)
     params['radius_filter'] = distance
 
     session = rauth.OAuth1Session(consumer_key = CONSUMER_KEY,
