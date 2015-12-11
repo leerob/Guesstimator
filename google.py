@@ -1,7 +1,8 @@
 from api_keys import GOOGLE_API_KEY
+from business import Business, make_request
 
-from business import Business
-from business import make_request
+SEARCH_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={},{}&radius={}&types=bar&key={}'
+PLACE_URL = 'https://maps.googleapis.com/maps/api/place/details/json?placeid={}&key={}'
 
 
 def search(lat, lng, distance):
@@ -14,7 +15,7 @@ def search(lat, lng, distance):
     :returns: List of retrieved places
     """
 
-    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={},{}&radius={}&types=bar&key={}'.format(lat, lng, distance, GOOGLE_API_KEY)
+    url = SEARCH_URL.format(lat, lng, distance, GOOGLE_API_KEY)
     place_list = []
 
     try:
@@ -39,7 +40,7 @@ def search_place(place_id):
     :returns: Business object
     """
 
-    url = 'https://maps.googleapis.com/maps/api/place/details/json?placeid={}&key={}'.format(place_id, GOOGLE_API_KEY)
+    url = PLACE_URL.format(place_id, GOOGLE_API_KEY)
 
     try:
         data = make_request(url)

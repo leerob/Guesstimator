@@ -1,11 +1,9 @@
 import time
 
-from api_keys import CLIENT_ID
-from api_keys import CLIENT_SECRET
-from api_keys import CATEGORY_ID
+from api_keys import CLIENT_ID, CLIENT_SECRET, CATEGORY_ID
+from business import Business, make_request
 
-from business import Business
-from business import make_request
+SEARCH_URL = 'https://api.foursquare.com/v2/venues/explore?ll={},{}&intent=browse&radius={}&limit=50&categoryId={}&client_id={}&client_secret={}&v={}'
 
 
 def search(lat, lng, distance):
@@ -18,7 +16,9 @@ def search(lat, lng, distance):
     :returns: List of retrieved venues
     """
 
-    url = 'https://api.foursquare.com/v2/venues/explore?ll={},{}&intent=browse&radius={}&limit=50&categoryId={}&client_id={}&client_secret={}&v={}'.format(lat, lng, distance, CATEGORY_ID, CLIENT_ID, CLIENT_SECRET, time.strftime("%Y%m%d"))
+    url = SEARCH_URL.format(lat, lng, distance,
+                            CATEGORY_ID, CLIENT_ID, CLIENT_SECRET,
+                            time.strftime("%Y%m%d"))
     venue_list = []
 
     try:

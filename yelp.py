@@ -1,10 +1,6 @@
 import rauth
 
-from api_keys import CONSUMER_KEY
-from api_keys import CONSUMER_SECRET
-from api_keys import TOKEN
-from api_keys import TOKEN_SECRET
-
+from api_keys import CONSUMER_KEY, CONSUMER_SECRET, TOKEN, TOKEN_SECRET
 from business import Business
 
 
