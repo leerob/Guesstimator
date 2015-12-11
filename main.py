@@ -26,22 +26,23 @@ def bayesian(R, v, m, C):
     return ((v / (v + m)) * R + (m / (v + m)) * C)
 
 
-def remove_duplicate_names(full_list):
+def get_input_locations():
     """
-    Fixes issue with multiple API calls returning the same businesses
+    Retrieves lat/long points from the user.
 
-    :param R: The entire unfiltered list
-    :returns: Filtered list
+    :returns: Locations tuples
     """
 
-    names = set()
-    filtered_list = []
-    for business in full_list:
-        if business.name not in names:
-            filtered_list.append(business)
-            names.add(business.name)
+    input_value = ''
+    locations = []
 
-    return filtered_list
+    while input_value is not 'n':
+        lat = float(raw_input('Lat: '))
+        lng = float(raw_input('Long: '))
+        locations.append((lat, lng))
+        input_value = raw_input('Would you like more points? (y/n) ')
+
+    return locations
 
 
 def main():
@@ -50,15 +51,8 @@ def main():
     lat/long points to cover entire town since API calls have length limits.
     """
 
-    input_value = ''
-    locations = []
-
-    distance = input('Search Radius (meters): ')
-    while input_value is not 'n':
-        lat = input('Lat: ')
-        lng = input('Long: ')
-        locations.append((lat, lng))
-        input_value = raw_input('Would you like more points? (y/n) ')
+    distance = int(raw_input('Search Radius (meters): '))
+    locations = get_input_locations()
 
     venues, businesses, places = [], [], []
 
@@ -74,9 +68,9 @@ def main():
         time.sleep(1.0)
 
     # Remove duplicates from API call overlap
-    venues = remove_duplicate_names(venues)
-    businesses = remove_duplicate_names(businesses)
-    places = remove_duplicate_names(places)
+    venues = list(set(venues))
+    businesses = list(set(businesses))
+    places = list(set(places))
 
     # Calculate low threshold and average ratings
     fs_low = min(venue.rating_count for venue in venues)
@@ -97,10 +91,7 @@ def main():
         p.bayesian = bayesian(p.rating * 2, p.rating_count, gp_low, gp_avg * 2)
 
     # Combine all lists into one
-    full_list = []
-    full_list.extend(venues)
-    full_list.extend(businesses)
-    full_list.extend(places)
+    full_list = venues + businesses + places
     print 'Found {} total businesses!'.format(len(full_list))
     
     # Combine ratings of duplicates
