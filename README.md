@@ -34,8 +34,7 @@ This program could also be used to search restaurants, coffee shops, you name it
 Review the API documentation for each service to determine what types are allowed.
 
 
-##Example
-####The Top 10 Bars in Des Moines, IA
+##Output
 
 1. **El Bait Shop** - 8.93 with 3 sources
 2. **Hessen Haus**  - 8.43 with 3 sources
