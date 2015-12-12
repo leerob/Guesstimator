@@ -3,13 +3,6 @@
 
 Guesstimator is a program that searches the Google Places, Yelp, and Foursquare APIs to create a list of bars in the given location. Then, it combines their ratings as a Bayesian estimate to rank them more accurately. 
 
-##Usage
-    Search Radius (meters): 40000
-    Lat: 41.59
-    Long: -93.61
-    Would you like more points? (y/n) n
-    Searching lat: 41.59 long: -93.61 ...
-    Found 90 total businesses!
 ##Setup
 You'll need to acquire API keys for each of the individual services and add them to api_keys.py.
 
@@ -20,6 +13,16 @@ You'll need to acquire API keys for each of the individual services and add them
 You'll also need to install rauth for authentication.
 
 `pip install rauth`
+##Usage
+    Search Radius (meters): 40000
+    Lat: 41.5908
+    Long: -93.6208
+    Would you like more points? (y/n) n
+    Searching foursquare at lat: 41.5908 long: -93.6208 ...
+    Searching google at lat: 41.5908 long: -93.6208 ...
+    Searching yelp at lat: 41.5908 long: -93.6208 ...
+    Found 90 total businesses!
+
 
 ##Other Usages
 This program could also be used to search restaurants, coffee shops, you name it. You'll need to:
@@ -31,7 +34,9 @@ This program could also be used to search restaurants, coffee shops, you name it
 Review the API documentation for each service to determine what types are allowed.
 
 
-##The Top 10 Bars in Des Moines, IA
+##Example
+####The Top 10 Bars in Des Moines, IA
+
 1. **El Bait Shop** - 8.93 with 3 sources
 2. **Hessen Haus**  - 8.43 with 3 sources
 3. **Zombie Burger + Drink Lab** - 8.73 with 2 sources
@@ -45,5 +50,5 @@ Review the API documentation for each service to determine what types are allowe
 
 If you look at the raw data.csv, you'll notice I removed results that were primarily restaurants and adjusted the rankings based on the number of data sources. For more explanation and a full rundown of how I created this program, check out my blog post here.
 
-##Known Issues
-You'll have to create an edge case if two bars somehow happened to have the same address. You should never have more than three data sources in your .csv file. If you do, then two bars with the same address are getting bucketed together.
+##Issues
+You'll have to create an edge case if two bars somehow happen to have the same address. You should never have more data sources in your .csv file than search engine modules. If you do, then two bars with the same address are getting bucketed together.
