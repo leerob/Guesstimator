@@ -45,63 +45,91 @@ def get_input_locations():
     return locations
 
 
-def main():
+def write_businesses(filename, businesses):
     """
-    Finds all the bars/restaurants in the given area. Use different
-    lat/long points to cover entire town since API calls have length limits.
+    Saves list of businesses to a .csv file sorted by Bayesian rating
+
+    :param filename: Output file name
+    :param businesses: List of businesses to write
     """
 
-    distance = int(raw_input('Search Radius (meters): '))
-    locations = get_input_locations()
+    businesses.sort(key=lambda x: x.bayesian, reverse=True)
 
-    venues, businesses, places = [], [], []
+    with open(filename, 'w') as csvfile:
 
-    for lat,lng in locations:
+        categories = ['Name', 'Rating', 'Number of Ratings', 'Checkins', 'Sources']
+        writer = csv.DictWriter(csvfile, fieldnames=categories)
 
-        # Retrieve all businesses for all sources
-        print 'Searching lat: {} long: {} ...'.format(lat, lng)
-        venues.extend(foursquare.search(lat, lng, distance))
-        businesses.extend(yelp.search(lat, lng, distance))
-        places.extend(google.search(lat, lng, distance))
+        writer.writeheader()
+        for business in businesses:
+            writer.writerow({'Name': business.name.encode('utf-8'),
+                             'Rating': '{0:.2f}'.format(business.bayesian),
+                             'Number of Ratings': business.rating_count,
+                             'Checkins': business.checkin_count,
+                             'Sources': business.source_count})
 
-        # Rate-limit API calls
-        time.sleep(1.0)
 
-    # Remove duplicates from API call overlap
-    venues = list(set(venues))
-    businesses = list(set(businesses))
-    places = list(set(places))
+def execute_search(locations, distance, search_engines):
+    """
+    Searches each API module at the given location(s) and distance.
 
-    # Calculate low threshold and average ratings
-    fs_low = min(venue.rating_count for venue in venues)
-    fs_avg = sum(venue.rating for venue in venues) / len(venues)
+    :param locations: User supplied lat/long point(s)
+    :param distance: How far to search (meters)
+    :param search_engines: List of search engine modules
+    :returns: Full list of businesses
+    """
 
-    yp_low = min(business.rating_count for business in businesses)
-    yp_avg = sum(business.rating for business in businesses) / len(businesses)
+    full_business_list = []
+    for engine in search_engines:
 
-    gp_low = min(place.rating_count for place in places)
-    gp_avg = sum(place.rating for place in places) / len(places)
+        businesses = []
+        for lat, lng in locations:
+            print 'Searching {} at lat: {} long: {} ...'.format(engine.__name__, lat, lng)
+            businesses.extend(engine.search(lat, lng, distance))
+            time.sleep(1.0)  # Rate-limit API calls
 
-    # Add bayesian estimates to business objects
-    for v in venues:
-        v.bayesian = bayesian(v.rating, v.rating_count, fs_low, fs_avg)
-    for b in businesses:
-        b.bayesian = bayesian(b.rating * 2, b.rating_count, yp_low, yp_avg * 2)
-    for p in places:
-        p.bayesian = bayesian(p.rating * 2, p.rating_count, gp_low, gp_avg * 2)
+        # Remove duplicates from API call overlap
+        businesses = list(set(businesses))
 
-    # Combine all lists into one
-    full_list = venues + businesses + places
-    print 'Found {} total businesses!'.format(len(full_list))
-    
-    # Combine ratings of duplicates
+        # Calculate low threshold and average ratings
+        low_threshold = min(business.rating_count for business in businesses)
+        average_rating = sum(business.rating for business in businesses) / len(businesses)
+
+        # Convert to 10 point scale
+        if engine.__name__ == 'foursquare':
+            scale_multiplier = 1
+        else:
+            scale_multiplier = 2
+
+        # Add bayesian estimates to business objects
+        for business in businesses:
+            business.bayesian = bayesian(business.rating * scale_multiplier,
+                                         business.rating_count,
+                                         low_threshold,
+                                         average_rating * scale_multiplier)
+
+        # Add this search engine's list to full business list
+        full_business_list.extend(businesses)
+
+    print 'Found {} total businesses!'.format(len(full_business_list))
+    return full_business_list
+
+
+def combine_duplicate_businesses(businesses):
+    """
+    Averages ratings of the same business from different sources
+
+    :param businesses: Full list of businesses
+    :returns: Filtered list with combined sources
+    """
+
     seen_addresses = set()
     filtered_list = []
-    for business in full_list:
+    for business in businesses:
         if business.address not in seen_addresses:
             filtered_list.append(business)
             seen_addresses.add(business.address)
-        else: 
+        else:
             # Find duplicate in list
             for b in filtered_list:
                 if b.address == business.address:
@@ -109,23 +137,22 @@ def main():
                     new_rating = (b.bayesian + business.bayesian) / 2.0
                     b.bayesian = new_rating
                     b.source_count = b.source_count + 1
-                 
-    # Sort by Bayesian rating
-    filtered_list.sort(key=lambda x: x.bayesian, reverse=True)
 
-    # Write to .csv file
-    with open('data.csv', 'w') as csvfile:
+    return filtered_list
 
-        categories = ['Name', 'Rating', 'Number of Ratings', 'Checkins', 'Sources']
-        writer = csv.DictWriter(csvfile, fieldnames=categories)
 
-        writer.writeheader()
-        for venue in filtered_list:
-            writer.writerow({'Name': venue.name.encode('utf-8'),
-                             'Rating': '{0:.2f}'.format(venue.bayesian),
-                             'Number of Ratings': venue.rating_count,
-                             'Checkins': venue.checkin_count,
-                             'Sources': venue.source_count})
+def main():
+    """
+    Searches the Foursquare, Google Places, and Yelp APIs at the given
+    location and distance. Use different lat/long points to cover
+    entire town since API calls have length limits.
+    """
+
+    distance = int(raw_input('Search Radius (meters): '))
+    locations = get_input_locations()
+    businesses = execute_search(locations, distance, [foursquare, google, yelp])
+    filtered_list = combine_duplicate_businesses(businesses)
+    write_businesses('data.csv', filtered_list)
 
 
 if __name__ == '__main__':
