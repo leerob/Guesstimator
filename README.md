@@ -1,7 +1,7 @@
 #Guesstimator
 <img src="http://i.imgur.com/JMD7wo4.jpg" />
 
-Guesstimator is a program that searches the Google Places, Yelp, and Foursquare APIs to create a list of bars in the given location. Then, it combines their ratings as a Bayesian estimate to rank them more accurately. 
+Guesstimator is a program that searches the Google Places, Yelp, and Foursquare APIs to create a list of bars in the given location. Then, it combines their ratings as a Bayesian estimate to rank them more accurately.
 
 ##Setup
 You'll need to acquire API keys for each of the individual services and add them to api_keys.py.
@@ -47,7 +47,7 @@ Review the API documentation for each service to determine what types are allowe
 9. **Exile Brewing Company** - 8.88 with 1 source
 10. **Court Avenue Restaurant & Brewing Company** - 8.26 with 2 sources
 
-If you look at the raw data.csv, you'll notice I removed results that were primarily restaurants and adjusted the rankings based on the number of data sources. For more explanation and a full rundown of how I created this program, check out my blog post here.
+If you look at the raw data.csv, you'll notice I removed results that were primarily restaurants and adjusted the rankings based on the number of data sources. This isn't a perfect rating system, but it's an improvement from using a single source. 
 
 ##Issues
 You'll have to create an edge case if two bars somehow happen to have the same address. You should never have more data sources in your .csv file than search engine modules. If you do, then two bars with the same address are getting bucketed together.
