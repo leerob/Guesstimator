@@ -89,7 +89,14 @@ def execute_search(locations, distance, search_engines):
             time.sleep(1.0)  # Rate-limit API calls
 
         # Remove duplicates from API call overlap
-        businesses = list(set(businesses))
+        names = set()
+        filtered_list = []
+        for business in businesses:
+            if business.name not in names:
+                filtered_list.append(business)
+                names.add(business.name)
+
+        businesses = filtered_list
 
         # Calculate low threshold and average ratings
         low_threshold = min(business.rating_count for business in businesses)

@@ -51,3 +51,19 @@ If you look at the raw data.csv, you'll notice I removed results that were prima
 
 ##Issues
 You'll have to create an edge case if two bars somehow happen to have the same address. You should never have more data sources in your .csv file than search engine modules. If you do, then two bars with the same address are getting bucketed together.
+
+##More Infomation
+The Google Places API returns the most "prominent" businesses first, unless specified. Prominence can be affected by a place's ranking in Google's index, global popularity, and other factors. If I switch that to location first, I do receive more unique places, but of less quality.
+
+The same theory applies to the Yelp Search API. You can choose the sort value, either by best matched, highest rated, or distance. The default gives you the best data, but has the potential to leave out businesses if they don't exceed the threshold.
+
+This is why some places might not be ranked as high as they (potentially) should be. When using the above strategies, I was able to find more businesses. However, there was a decrease in the quality of ratings, and it brought the overall averages down. I'm now left with a completely different set of data. This might be better suited for your needs, or maybe not. Here's how you could accomplish that:
+
+**Yelp** - Add these parameters to your request
+
+    params['sort'] = 1
+    params['limit'] = 20
+    
+**Google** - Remove the radius parameter and add this to your URL
+
+    &rankby=distance
